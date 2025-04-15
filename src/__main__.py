@@ -10,9 +10,9 @@ from src.payments.handlers import router as payment_router
 from src.users.handlers import router as user_router
 
 routers = [user_router, payment_router]
-dp = Dispatcher()
+dp = Dispatcher(bot=bot)
 dp.include_routers(*routers)
-bot = Bot(conf.bot_token, default=DefaultBotProperties(parse_mode="HTML"))
+bot = Bot(token='7930467714:AAGnJixu-zm1bpe3MK90o4DeeALRHiTQXsM')
 
 if __name__ == "__main__":
     # Включаем логирование.
