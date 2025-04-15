@@ -1,12 +1,12 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from pydantic_settings import BaseSettings
 
 class Config(BaseSettings):
     bot_token: str
     pay_token: str
     webapp_url: str
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 conf = Config()
