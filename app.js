@@ -63,6 +63,6 @@ let usercard = document.getElementById('usercard');
 
 if (usercard && tg.initDataUnsafe && tg.initDataUnsafe.user) {
     let p = document.createElement('p');
-    p.innerHTML = ` Имя: ${tg.initDataUnsafe.user.first_name}<br /> Фамилия: ${tg.initDataUnsafe.user.last_name} `;
+    p.innerHTML = `${tg.initDataUnsafe.user.first_name}<br />${tg.initDataUnsafe.user.last_name} `;
     usercard.appendChild(p);
 }
