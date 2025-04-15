@@ -1,56 +1,68 @@
 var tg = window.Telegram.WebApp;
 
-// Расширяем на весь экран.
+// Расширяем окно приложения на полный экран
 tg.expand();
 
-// Кнопка просмотра заказа (реализуется тг - не сайтом).
+// Настраиваем основную кнопку
 tg.MainButton.textColor = '#FFFFFF';
 tg.MainButton.color = '#2cab37';
 
-// Хранение выбранного товара.
-let item = "";
+// Массив для хранения соответствия id товара цене
+let prices = {};
+prices['1'] = 220;
+prices['2'] = 460;
+prices['3'] = 240;
+prices['4'] = 190;
+prices['5'] = 100;
+prices['6'] = 687;
+prices['7'] = 800;
+prices['8'] = 135;
+prices['9'] = 550;
+prices['10'] = 736;
+prices['11'] = 999;
+prices['12'] = 1270;
 
-let prices = new Object();
-prices[1] = 220;
-prices[2] = 460;
-prices[3] = 240;
-prices[4] = 190;
-prices[5] = 100;
-prices[6] = 687;
-prices[7] = 800;
-prices[8] = 135;
-prices[9] = 550;
-prices[10] = 736;
-prices[11] = 999;
-prices[12] = 1270;
+// Сохраняем выбранный товар
+let currentItem = '';
 
-for (var i = 1; i <= 12; i++) {
-	let btn = document.getElementById("btn" + i.toString());
-	btn.btn_id = i;
-	btn.price = prices[i];
-	btn.addEventListener("click", function() {
-		if (tg.MainButton.isVisible) {
-			tg.MainButton.hide();
-		}
-		else {
-			tg.MainButton.setText("Перейти к оплате (" + btn.price.toString() + "₽)");
-			item = this.btn_id.toString();
-			tg.MainButton.show();
-		}
-	});
+// Обходим все кнопки
+for (let i = 1; i <= 12; i++) {
+    let btn = document.getElementById('btn' + i);
+    if (!btn) continue; // пропускаем, если элемент отсутствует
+
+    // Присваиваем атрибут data-id для хранения номера товара
+    btn.dataset.id = i;
+
+    // добавляем обработчик события клика
+    btn.addEventListener('click', function(event) {
+        event.preventDefault();
+        let itemID = this.dataset.id;
+        let price = prices[itemID];
+
+        if (typeof price === 'undefined') return; // проверяем наличие цены
+
+        if (tg.MainButton.isVisible()) {
+            tg.MainButton.hide(); // прячем кнопку, если она уже видна
+        } else {
+            tg.MainButton.setText(`Перейти к оплате (${price} ₽)`); // обновляем текст кнопки
+            currentItem = itemID; // сохраняем выбранный товар
+            tg.MainButton.show(); // показываем кнопку
+        }
+    });
 }
 
-// Отправка данных в тг.
-Telegram.WebApp.onEvent("mainButtonClicked", function(){
-	tg.sendData(item);
+// Обрабатываем событие нажатия на главную кнопку
+Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    if (currentItem !== '') {
+        tg.sendData(currentItem); // отправляем выбранный товар
+    }
 });
 
-// Добавление в usercard данных из тг.
-let usercard = document.getElementById("usercard");
+// Блок с информацией о пользователе
+let usercard = document.getElementById('usercard');
 
-let p = document.createElement("p");
-
-p.innerText = `${tg.initDataUnsafe.user.first_name}
-${tg.initDataUnsafe.user.last_name}`;
-
-usercard.appendChild(p);
+if (usercard && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    let p = document.createElement('p');
+    p.innerHTML = ` Имя: ${tg.initDataUnsafe.user.first_name}<br /> Фамилия: ${tg.initDataUnsafe.user.last_name} `;
+    usercard.appendChild(p);
+}
