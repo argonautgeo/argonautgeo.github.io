@@ -24,7 +24,7 @@ prices[10] = 985;
 prices[11] = 566;
 prices[12] = 214;
 
-for (var i = 1; i <= 12; i++) {
+for (var i = 1; i <= 6; i++) {
 	let btn = document.getElementById("btn" + i.toString());
 	btn.btn_id = i;
 	btn.price = prices[i];
