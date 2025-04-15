@@ -3,66 +3,59 @@ var tg = window.Telegram.WebApp;
 // Расширяем на весь экран.
 tg.expand();
 
-// Настраиваем стиль главной кнопки.
+// Настраиваем кнопку оформления заказа.
 tg.MainButton.textColor = '#FFFFFF';
 tg.MainButton.color = '#2cab37';
 
-// Массив цен товаров
-let prices = {
-    '1': 220,
-    '2': 460,
-    '3': 240,
-    '4': 190,
-    '5': 100,
-    '6': 687,
-    '7': 300,
-    '8': 645,
-    '9': 212,
-    '10': 678,
-    '11': 999,
-    '12': 1270
-};
+// Идентификатор выбранного товара.
+let item = "";
 
-// Сохраняем выбранный товар
-let item = '';
+// Цены товаров.
+let prices = new Object();
+prices[1] = 220;
+prices[2] = 460;
+prices[3] = 240;
+prices[4] = 190;
+prices[5] = 100;
+prices[6] = 687;
+prices[7] = 300;
+prices[8] = 645;
+prices[9] = 212;
+prices[10] = 678;
+prices[11] = 999;
+prices[12] = 1270;
 
-// По очереди обрабатываем все кнопки
-for (let i = 1; i <= 12; i++) {
-    let btn = document.getElementById('btn' + i);
-    if (!btn) continue; // если кнопка не найдена, продолжаем дальше
+// Обработка кликов по кнопкам товаров.
+for (var i = 1; i <= 12; i++) {
+    let btn = document.getElementById("btn" + i.toString());
+    if (!btn) continue; // Если кнопка не найдена, переходим к следующей итерации.
 
-    // Атрибут data-id хранит идентификатор товара
+    // Храним идентификатор товара и цену в атрибутах data.
     btn.dataset.id = i;
+    btn.dataset.price = prices[i];
 
-    // Привязываем обработчик клика
-    btn.addEventListener('click', function() {
-        let itemID = this.dataset.id;
-        let price = prices[itemID];
-
-        if (typeof price === 'undefined') return; // если цена не определена, ничего не делаем
-
-        if (tg.MainButton.isVisible()) {
-            tg.MainButton.hide(); // скрываем кнопку, если она уже видна
+    btn.addEventListener("click", function() {
+        if (tg.MainButton.isVisible()) { // Корректная проверка видимости кнопки.
+            tg.MainButton.hide();
         } else {
-            tg.MainButton.setText(`Перейти к оплате (${price} ₽)`); // ставим цену товара
-            item = itemID; // сохраняем выбранный товар
-            tg.MainButton.show(); // показываем кнопку
+            let price = this.dataset.price; // Берём цену из атрибута data.
+            tg.MainButton.setText("Перейти к оплате (" + price + " ₽)");
+            item = this.dataset.id; // Сохраняем идентификатор товара.
+            tg.MainButton.show();
         }
     });
 }
 
-// Реакция на клик по главной кнопке
-Telegram.WebApp.onEvent('mainButtonClicked', function() {
-    if (item !== '') {
-        tg.sendData(item); // отправляем выбранный товар
-    }
+// Отправка данных при нажатии на кнопку оформления заказа.
+Telegram.WebApp.onEvent("mainButtonClicked", function() {
+    tg.sendData(item); // Передаёт выбранный товар в Telegram.
 });
 
-// Информация о пользователе (только если есть initDataUnsafe)
-let usercard = document.getElementById('usercard');
+// Добавляет информацию о пользователе в карточку.
+let usercard = document.getElementById("usercard");
 
 if (usercard && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    let p = document.createElement('p');
-    p.innerHTML = ` Имя: ${tg.initDataUnsafe.user.first_name}<br /> Фамилия: ${tg.initDataUnsafe.user.last_name} `;
+    let p = document.createElement("p");
+    p.innerText = `${tg.initDataUnsafe.user.first_name}\n${tg.initDataUnsafe.user.last_name}`; // Форматируем вывод данных.
     usercard.appendChild(p);
 }
