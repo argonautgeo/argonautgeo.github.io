@@ -3,65 +3,48 @@ var tg = window.Telegram.WebApp;
 // Расширяем на весь экран.
 tg.expand();
 
-// Настройки цвета основной кнопки
+// Кнопка просмотра заказа (реализуется тг - не сайтом).
 tg.MainButton.textColor = '#FFFFFF';
 tg.MainButton.color = '#2cab37';
 
-// Хранение выбранного товара
+// Хранение выбранного товара.
 let item = "";
 
-// Цены товаров
-let prices = {
-    '1': 220,
-    '2': 460,
-    '3': 240,
-    '4': 190,
-    '5': 100,
-    '6': 687,
-    '7': 800,
-    '8': 135,
-    '9': 550,
-    '10': 736,
-    '11': 999,
-    '12': 1270
-};
+let prices = new Object();
+prices[1] = 220;
+prices[2] = 460;
+prices[3] = 240;
+prices[4] = 190;
+prices[5] = 100;
+prices[6] = 687;
 
-// Назначаем обработчики событий на каждую кнопку
-for (let i = 1; i <= 12; i++) {
-    let btn = document.getElementById("btn" + i);
-    if (!btn) continue; // пропустить, если элемент не найден
-
-    // Установим ID товара через атрибут data-id
-    btn.dataset.id = i;
-
-    btn.addEventListener("click", function() {
-        let itemID = this.dataset.id;
-        let price = prices[itemID];
-
-        if (typeof price === 'undefined') return; // защитимся от ситуаций, когда цена не найдена
-
-        if (tg.MainButton.isVisible()) {
-            tg.MainButton.hide(); // скроем кнопку, если она уже открыта
-        } else {
-            tg.MainButton.setText("Перейти к оплате (" + price + " ₽)"); // обновление текста кнопки
-            item = itemID; // сохраним выбранный товар
-            tg.MainButton.show(); // покажем кнопку
-        }
-    });
+for (var i = 1; i <= 12; i++) {
+	let btn = document.getElementById("btn" + i.toString());
+	btn.btn_id = i;
+	btn.price = prices[i];
+	btn.addEventListener("click", function() {
+		if (tg.MainButton.isVisible) {
+			tg.MainButton.hide();
+		}
+		else {
+			tg.MainButton.setText("Перейти к оплате (" + btn.price.toString() + "₽)");
+			item = this.btn_id.toString();
+			tg.MainButton.show();
+		}
+	});
 }
 
-// Отправка данных при нажатии основной кнопки
-Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    if (item != "") {
-        tg.sendData(item); // отправляем выбранный товар
-    }
+// Отправка данных в тг.
+Telegram.WebApp.onEvent("mainButtonClicked", function(){
+	tg.sendData(item);
 });
 
-// Показ информации о пользователе
+// Добавление в usercard данных из тг.
 let usercard = document.getElementById("usercard");
 
-if (usercard && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    let p = document.createElement("p");
-    p.innerHTML = ` Имя: ${tg.initDataUnsafe.user.first_name}<br /> Фамилия: ${tg.initDataUnsafe.user.last_name} `;
-    usercard.appendChild(p);
-}
+let p = document.createElement("p");
+
+p.innerText = `${tg.initDataUnsafe.user.first_name}
+${tg.initDataUnsafe.user.last_name}`;
+
+usercard.appendChild(p);
