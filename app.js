@@ -16,9 +16,15 @@ prices[2] = 460;
 prices[3] = 240;
 prices[4] = 190;
 prices[5] = 100;
-prices[6] = 150;
+prices[6] = 687;
+prices[7] = 800;
+prices[8] = 135;
+prices[9] = 550;
+prices[10] = 736;
+prices[11] = 999;
+prices[12] = 1270;
 
-for (var i = 1; i <= 6; i++) {
+for (var i = 1; i <= 12; i++) {
 	let btn = document.getElementById("btn" + i.toString());
 	btn.btn_id = i;
 	btn.price = prices[i];
